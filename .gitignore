@@ -1,0 +1,33 @@
+touch .gitignore
+
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Data files (too large for GitHub)
+data/
+*.csv
+*.zip
+*.tar.gz
+
+# Model checkpoints (too large for GitHub)
+*.pth
+*.pt
+*.ckpt
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Mac system files
+.DS_Store
+
+# VS Code settings
+.vscode/
+
+# Environment variables
+.env
