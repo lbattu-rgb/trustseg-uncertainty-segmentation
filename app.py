@@ -339,9 +339,31 @@ with tab2:
             st.divider()
 
             for i, result in enumerate(ranked):
-                priority = "High priority" if result['uncertainty'] > 0.03 else "Medium priority" if result['uncertainty'] > 0.01 else "Low priority"
+                u = result['uncertainty']
+                if u > 0.03:
+                    border_color = "rgba(255, 68, 68, 0.6)"
+                    bg_color = "rgba(255, 68, 68, 0.07)"
+                    priority = "High priority"
+                elif u > 0.01:
+                    border_color = "rgba(255, 170, 0, 0.6)"
+                    bg_color = "rgba(255, 170, 0, 0.07)"
+                    priority = "Medium priority"
+                else:
+                    border_color = "rgba(0, 204, 102, 0.6)"
+                    bg_color = "rgba(0, 204, 102, 0.07)"
+                    priority = "Low priority"
 
                 with st.expander(f"#{i+1} — {result['name']} | Uncertainty: {result['uncertainty']:.6f} | {priority}"):
+                    st.markdown(f"""
+                    <style>
+                    div[data-testid="stExpander"]:nth-of-type({i+1}) {{
+                        border: 1px solid {border_color} !important;
+                        background: {bg_color} !important;
+                        border-radius: 12px !important;
+                    }}
+                    </style>
+                    """, unsafe_allow_html=True)
+
                     c1, c2, c3 = st.columns(3)
 
                     with c1:
