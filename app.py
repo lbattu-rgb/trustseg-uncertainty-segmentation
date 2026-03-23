@@ -13,6 +13,16 @@ from src.active_learning import rank_by_uncertainty
 st.set_page_config(page_title="TrustSeg", layout="wide")
 
 st.title("TrustSeg: Uncertainty-Aware Skin Lesion Segmentation")
+st.markdown("""
+### What this tool does
+- Segments skin lesions using a deep learning model (U-Net)
+- Estimates prediction uncertainty using Monte Carlo Dropout
+- Highlights unreliable predictions for review
+
+### How to interpret results
+- Low uncertainty → high confidence
+- High uncertainty → model is unsure
+""")
 st.markdown("Upload a dermoscopic image to see the predicted segmentation mask and uncertainty map.")
 
 @st.cache_resource
@@ -88,7 +98,14 @@ with tab1:
 
             if avg_uncertainty >= 0.03:
                 st.warning("⚠️ Low confidence prediction — recommend manual review by a clinician.")
-
+                # Clear interpretation for user
+            if avg_uncertainty < 0.01:
+                st.success("Model is very confident in this prediction.")
+            elif avg_uncertainty < 0.03:
+                st.info("Moderate confidence. Review recommended.")
+            else:
+                st.error("Low confidence. Prediction may be unreliable.")
+    
             st.divider()
             st.subheader("Pixel-Level Uncertainty Distribution")
             st.markdown("This histogram shows how uncertainty is distributed across every pixel in the image. A spike on the left means most pixels are confident. A long right tail means many pixels are uncertain.")
