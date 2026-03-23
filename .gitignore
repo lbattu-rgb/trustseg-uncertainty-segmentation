@@ -16,7 +16,6 @@ data/
 *.tar.gz
 
 # Model checkpoints (too large for GitHub)
-*.pth
 *.pt
 *.ckpt
 
