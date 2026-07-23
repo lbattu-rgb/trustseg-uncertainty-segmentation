@@ -1,126 +1,334 @@
 # TrustSeg: Uncertainty-Aware Skin Lesion Segmentation
 
-This project builds a deep learning model for skin lesion segmentation and explores how uncertainty can help identify unreliable predictions. The model predicts lesion regions from dermoscopic images and also shows where it is less confident.
+> Deep learning-based skin lesion segmentation with predictive
+> uncertainty estimation using **Monte Carlo Dropout**, interactive
+> visualization, and uncertainty-guided active learning.
 
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.1-EE4C2C?logo=pytorch&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+```{=html}
+<p align="center">
+```
+`<img src="assets/prediction-demo.png" width="800">`{=html}
+```{=html}
+</p>
+```
 ## Overview
 
-Skin lesion segmentation is important for early detection of conditions like melanoma. Most models only output predictions, but in real settings it is just as important to know when a model might be wrong.
+TrustSeg is an end-to-end medical image segmentation project that
+explores an important question:
 
-In this project, I built a segmentation system that:
+> **Can a segmentation model communicate when it is uncertain about its
+> own prediction?**
 
-* predicts lesion masks using a U-Net style model
-* estimates uncertainty using Monte Carlo Dropout
-* visualizes both predictions and uncertainty
+Traditional segmentation models typically produce a binary mask without
+conveying confidence. TrustSeg extends a U-Net segmentation pipeline
+with **Monte Carlo Dropout** to estimate predictive uncertainty and
+visualize regions where the model is less confident.
 
-I also explored a key question:
-**can uncertainty actually indicate when the model is making mistakes?**
+Beyond segmentation, the project includes:
 
-## Approach
+-   Interactive Streamlit application
+-   Pixel-wise uncertainty visualization
+-   Dice score evaluation
+-   Uncertainty vs. performance analysis
+-   Uncertainty-guided active learning
+-   Post-hoc concept explanations for uncertainty
 
-The model is implemented in PyTorch and trained on dermoscopic images.
+------------------------------------------------------------------------
 
-Key components:
+# Demo
 
-* U-Net style convolutional network for segmentation
-* Monte Carlo Dropout for uncertainty estimation
-* Dice loss for training
-* simple data augmentation (flips, rotations, color changes)
+### Home
 
-During inference, the model runs multiple times on the same image with dropout enabled. The variation across predictions is used to generate an uncertainty map.
+![](assets/demo-home.png)
 
-## What the model outputs
+### Prediction
 
-For each image:
+![](assets/prediction-demo.png)
 
-* predicted segmentation mask
-* uncertainty map (higher = less confident)
+### Uncertainty Visualization
 
-This helps highlight regions where the model may need human review.
+![](assets/uncertainty-demo.png)
 
-## Analysis
+------------------------------------------------------------------------
 
-To understand whether uncertainty is meaningful, I compared:
+# Features
 
-* segmentation performance (Dice score)
-* average uncertainty per image
+-   U-Net style encoder-decoder architecture with skip connections
+-   Monte Carlo Dropout for Bayesian uncertainty approximation
+-   Dice Loss optimization
+-   Albumentations preprocessing and augmentation
+-   Interactive Streamlit inference interface
+-   GPU acceleration when available
+-   Overlay visualization of predictions
+-   Pixel-level uncertainty heatmaps
+-   Active learning image ranking by uncertainty
+-   Concept-based interpretation of uncertain predictions
+-   Dice score evaluation pipeline
+-   Uncertainty vs Dice correlation analysis
 
-This helps evaluate whether higher uncertainty corresponds to lower model accuracy, which is important for building more trustworthy systems.
+------------------------------------------------------------------------
 
-## Project Structure
+# Pipeline
 
-SkinSegmentationProject/
-├── data/
-│   ├── images/
-│   ├── masks/
-├── src/
-│   ├── dataset.py
-│   ├── model.py
-│   ├── train.py
-│   ├── evaluate.py
-│   ├── uncertainty.py
-├── app.py
+``` text
+Input Image
+     │
+     ▼
+Preprocessing
+     │
+     ▼
+U-Net Segmentation
+     │
+     ├────────► Predicted Mask
+     │
+     ▼
+20 Stochastic Forward Passes
+     │
+     ▼
+Variance Across Predictions
+     │
+     ▼
+Pixel-wise Uncertainty Map
+     │
+     ▼
+Concept Analysis + Active Learning Ranking
+```
+
+------------------------------------------------------------------------
+
+# Repository Structure
+
+``` text
+trustseg-uncertainty-segmentation/
+│
+├── app.py                      # Streamlit application
 ├── requirements.txt
 ├── README.md
+│
+├── assets/
+│   ├── demo-home.png
+│   ├── prediction-demo.png
+│   └── uncertainty-demo.png
+│
+├── model/
+│   └── best_model.pth
+│
+└── src/
+    ├── dataset.py
+    ├── model.py
+    ├── train.py
+    ├── evaluate.py
+    ├── uncertainty.py
+    ├── active_learning.py
+    └── concepts.py
+```
 
-## Setup
+## Module Overview
 
-1. Install dependencies:
-   pip install -r requirements.txt
+  -----------------------------------------------------------------------
+  File                         Purpose
+  ---------------------------- ------------------------------------------
+  `dataset.py`                 Loads ISIC images and masks with
+                               Albumentations transforms
 
-2. Prepare your dataset:
+  `model.py`                   U-Net implementation with Dropout layers
 
-* images → data/images/
-* masks → data/masks/
+  `train.py`                   Training loop, validation, checkpointing
 
-Mask naming should match:
-image_001.jpg → image_001_segmentation.png
+  `evaluate.py`                Dice score evaluation and uncertainty
+                               correlation
 
-## Training
+  `uncertainty.py`             Monte Carlo Dropout inference
 
-python3 -m src.train
+  `active_learning.py`         Ranks unlabeled images by uncertainty
 
-This will train the model and save weights to:
+  `concepts.py`                Generates human-readable explanations for
+                               uncertainty
+
+  `app.py`                     Interactive Streamlit interface
+  -----------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+# Technology Stack
+
+-   Python
+-   PyTorch
+-   Torchvision
+-   Albumentations
+-   OpenCV
+-   NumPy
+-   Matplotlib
+-   Streamlit
+
+------------------------------------------------------------------------
+
+# Installation
+
+``` bash
+git clone https://github.com/lbattu-rgb/trustseg-uncertainty-segmentation.git
+
+cd trustseg-uncertainty-segmentation
+
+python3 -m venv venv
+
+source venv/bin/activate      # macOS/Linux
+
+pip install -r requirements.txt
+```
+
+------------------------------------------------------------------------
+
+# Dataset
+
+Expected structure:
+
+``` text
+data/
+├── images/
+└── masks/
+```
+
+Masks should follow:
+
+``` text
+image001.jpg
+image001_segmentation.png
+```
+
+------------------------------------------------------------------------
+
+# Training
+
+``` bash
+python -m src.train
+```
+
+The best validation model is saved to:
+
+``` text
 model/best_model.pth
+```
 
-## Run the App
+------------------------------------------------------------------------
 
+# Evaluation
+
+``` bash
+python -m src.evaluate
+```
+
+This computes Dice scores across the evaluation dataset and generates an
+uncertainty-versus-performance scatter plot.
+
+------------------------------------------------------------------------
+
+# Running the Application
+
+``` bash
 streamlit run app.py
+```
 
-Then open in your browser:
-http://localhost:8501
+The interface supports:
 
-You can upload an image and view:
+-   Image upload
+-   Sample image inference
+-   Segmentation mask visualization
+-   Overlay rendering
+-   Pixel-wise uncertainty heatmap
+-   Confidence summary
+-   Concept explanations
+-   Active learning image ranking
 
-* original image
-* predicted mask
-* uncertainty map
+------------------------------------------------------------------------
 
-## Model + Uncertainty
+# Monte Carlo Dropout
 
-The model uses Monte Carlo Dropout to estimate uncertainty.
+During inference, dropout remains enabled and the network performs
+multiple stochastic forward passes.
 
-Instead of making one prediction, it runs multiple forward passes with dropout enabled. The final output includes:
+For every pixel:
 
-* mean prediction (segmentation)
-* variance (uncertainty)
+-   Mean prediction → segmentation mask
+-   Variance → uncertainty estimate
 
-Higher variance means the model is less confident in that region.
+Higher variance indicates lower confidence.
 
-## Evaluation
+------------------------------------------------------------------------
 
-Performance is measured using Dice score, which compares overlap between prediction and ground truth.
+# Active Learning
 
-## Notes
+TrustSeg ranks unlabeled images by predictive uncertainty.
 
-* The model expects binary masks (0 = background, 1 = lesion)
-* Images are resized during preprocessing
-* GPU is used if available, otherwise it falls back to CPU
+Rather than labeling images randomly, users can prioritize samples the
+model is least confident about, making annotation more efficient.
 
-## Future Work
+------------------------------------------------------------------------
 
-* improve model performance
-* explore better uncertainty methods
-* add more evaluation metrics
-* extend to multi-class segmentation
+# Post-hoc Concept Analysis
 
-This project focuses on building a simple but complete pipeline: data → model → uncertainty → visualization, with an emphasis on understanding model reliability.
+Beyond raw uncertainty maps, TrustSeg converts uncertainty into
+interpretable descriptions by analyzing image characteristics such as:
+
+-   Boundary contrast
+-   Edge strength
+-   Background texture
+-   Prediction fragmentation
+-   Perimeter uncertainty
+
+These explanations help users understand *why* the model may be
+uncertain.
+
+------------------------------------------------------------------------
+
+# Software Engineering
+
+This repository emphasizes maintainable software engineering practices:
+
+-   Modular project organization
+-   Separation of training, inference, evaluation, and UI
+-   Reusable preprocessing pipeline
+-   Object-oriented model implementation
+-   GPU/CPU compatibility
+-   Consistent naming conventions
+-   Saved checkpoints
+-   Clear dependency management
+
+------------------------------------------------------------------------
+
+# Future Work
+
+-   Add automated unit tests
+-   Add GitHub Actions CI
+-   Add configuration files (YAML)
+-   Compare with additional uncertainty estimation methods
+-   Benchmark larger segmentation architectures
+-   Add model calibration metrics
+-   Expand to multiclass segmentation
+
+------------------------------------------------------------------------
+
+# Acknowledgements
+
+-   PyTorch
+-   Streamlit
+-   Albumentations
+-   OpenCV
+
+------------------------------------------------------------------------
+
+# Contributing
+
+Contributions, bug reports, and suggestions are welcome through Issues
+and Pull Requests.
+
+------------------------------------------------------------------------
+
+# License
+
+This project is suitable for release under the MIT License.
