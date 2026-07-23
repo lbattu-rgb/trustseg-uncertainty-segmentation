@@ -63,7 +63,6 @@ Beyond segmentation, the project includes:
 -   Dice Loss optimization
 -   Albumentations preprocessing and augmentation
 -   Interactive Streamlit inference interface
--   GPU acceleration when available
 -   Overlay visualization of predictions
 -   Pixel-level uncertainty heatmaps
 -   Active learning image ranking by uncertainty
